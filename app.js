@@ -79,34 +79,21 @@ app.post("/compose", function(req, res)
 
 app.get("/posts/:postTitle", function (req, res)
 {
-  let postData = findPost(_.lowerCase(req.params.postTitle));
-
-  if (!_.isEmpty(postData))
-  {
-    res.render("post", {postData: postData});
-  }
-  else
-  {
-    res.redirect('/');
-  }
-});
-
-function findPost(title)
-{
-  let returnPost = {};
-  for (let i = 0; i < posts.length; i++)
-  {
-    if (_.lowerCase(posts[i].title) === title)
+  post.findOne({title: req.params.postTitle}, (err, result) => {
+    if (result)
     {
-      returnPost = posts[i];
-      break;
+      res.render("post", {postData: result});
     }
-  }
-
-  return returnPost;
-}
-
-
+    else if (err)
+    {
+      console.log(err);
+    }
+    else
+    {
+      res.redirect('/');
+    }
+  });
+});
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
