@@ -14,8 +14,6 @@ const app = express();
 
 mongoose.connect("mongodb://localhost:27017/blogDB");
 
-let posts = [];
-
 const postSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -36,7 +34,13 @@ app.use(express.static("public"));
 
 app.get("/", function(req,res)
 {
-  res.render("home", {homeStartingContent: homeStartingContent, posts: posts});
+  post.find({}, (err, posts) => {
+    if (err) {
+      console.log(err);
+    }
+
+    res.render("home", {homeStartingContent: homeStartingContent, posts: posts});
+  });
 });
 
 app.get("/about", function(req, res)
@@ -56,14 +60,21 @@ app.get("/compose", function(req, res)
 
 app.post("/compose", function(req, res)
 {
-  const post = {
+  const newPost = new post({
     title: req.body.postTitle,
     body: req.body.postBody
-  };
+  });
 
-  posts.push(post);
-
-  res.redirect('/');
+  newPost.save().then(err => {
+    if (!err)
+    {
+      res.redirect('/');
+    }
+    else
+    {
+      console.log(err);
+    }
+  });
 });
 
 app.get("/posts/:postTitle", function (req, res)
