@@ -77,9 +77,9 @@ app.post("/compose", function(req, res)
   });
 });
 
-app.get("/posts/:postTitle", function (req, res)
+app.get("/posts/:postId", function (req, res)
 {
-  post.findOne({title: req.params.postTitle}, (err, result) => {
+  post.findOne({_id: req.params.postId}, (err, result) => {
     if (result)
     {
       res.render("post", {postData: result});
